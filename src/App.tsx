@@ -10,6 +10,8 @@ import {
   recomputeHeightmapFromMask,
 } from './game/terrain/mask'
 import type { TerrainDimensions } from './game/terrain/mask'
+import { placeTwoTanks } from './game/spawn/place-tanks'
+import { renderTank } from './game/render/tank'
 
 export const App = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -32,6 +34,13 @@ export const App = () => {
     }
     let heights = generateHeightmap(config)
     let mask = createMaskFromHeightmap(heights, dims)
+    const [tankA, tankB] = placeTwoTanks({
+      dims,
+      mask,
+      tankRadius: 10,
+      minSeparation: Math.floor(dims.width * 0.35),
+      maxSlopeDegrees: 30,
+    })
 
     const handleClick = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
@@ -67,6 +76,10 @@ export const App = () => {
       // terrain
       renderTerrainFromHeightmap(ctx, heights, width, height)
       renderTerrainOutline(ctx, heights)
+
+      // tanks
+      renderTank(ctx, tankA, 10, '#38bdf8')
+      renderTank(ctx, tankB, 10, '#f472b6')
     };
 
     const loop = startGameLoop(canvas, update, render);
