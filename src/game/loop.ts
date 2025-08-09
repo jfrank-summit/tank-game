@@ -3,9 +3,9 @@ import { FIXED_DT_SECONDS, MAX_ACCUMULATED_SECONDS, nowSeconds, clamp } from './
 export type UpdateFn = (dt: number) => void;
 export type RenderFn = (ctx: CanvasRenderingContext2D, alpha: number) => void;
 
-export type GameLoopHandle = {
+export interface GameLoopHandle {
   stop: () => void;
-};
+}
 
 export const startGameLoop = (
   canvas: HTMLCanvasElement,

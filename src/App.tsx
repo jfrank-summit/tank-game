@@ -1,19 +1,19 @@
-import { useEffect, useRef } from 'react';
-import { startGameLoop } from './game/loop';
-import './index.css';
+import { useEffect, useRef } from 'react'
+import { startGameLoop } from './game/loop'
+import './index.css'
 
-const App = () => {
+export const App = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const update = (_dt: number) => {
+    const update = () => {
       // placeholder for physics updates
     };
 
-    const render = (ctx: CanvasRenderingContext2D, _alpha: number) => {
+    const render = (ctx: CanvasRenderingContext2D) => {
       const { width, height } = ctx.canvas;
       ctx.clearRect(0, 0, width, height);
 
@@ -39,7 +39,5 @@ const App = () => {
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <canvas ref={canvasRef} />
     </div>
-  );
-};
-
-export default App;
+  )
+}

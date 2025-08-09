@@ -19,5 +19,22 @@ export default tseslint.config([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      'prefer-arrow-callback': 'warn',
+      'func-style': ['warn', 'expression'],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "ClassDeclaration[superClass=null]:matches(:has(Identifier[name!='Error']))",
+          message: 'Avoid classes in core code; prefer functions and hooks.',
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/game/**/*.ts'],
+    rules: {
+      'no-class-assign': 'error',
+    },
   },
 ])
