@@ -12,6 +12,17 @@ import {
 import type { TerrainDimensions } from './game/terrain/mask'
 import { placeTwoTanks } from './game/spawn/place-tanks'
 import { renderTank } from './game/render/tank'
+import {
+  ANGLE_DEG_DEFAULT,
+  LAUNCH_SPEED_DEFAULT,
+  GRAVITY_PX_S2,
+  DEFAULT_WIND_AX,
+  EXPLOSION_RADIUS,
+} from './game/config'
+import { createProjectile, stepProjectile } from './game/physics/projectile'
+import { segmentFirstImpact } from './game/physics/collision'
+import { applyExplosion } from './game/effects/explosion'
+import { Hud } from './ui/hud'
 
 export const App = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -52,6 +63,40 @@ export const App = () => {
     }
     canvas.addEventListener('click', handleClick)
 
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === ' ') {
+        const startX = tankA.x
+        const startY = tankA.y
+        const angleRad = (angleRef.current * Math.PI) / 180
+        let prev = createProjectile(startX, startY, powerRef.current, angleRad)
+        let current = prev
+        const dt = 1 / 120
+        let impact: ReturnType<typeof segmentFirstImpact> | null = null
+        for (let i = 0; i < 2000; i += 1) {
+          current = stepProjectile(current, dt, {
+            gravity: GRAVITY_PX_S2,
+            windAx: windAxRef.current,
+          })
+          impact = segmentFirstImpact(mask, dims, prev.x, prev.y, current.x, current.y, 0.75)
+          if (
+            impact ||
+            current.x < 0 ||
+            current.x >= dims.width ||
+            current.y >= dims.height
+          ) {
+            break
+          }
+          prev = current
+        }
+        if (impact) {
+          const res = applyExplosion(mask, dims, impact.x, impact.y, EXPLOSION_RADIUS)
+          mask = res.mask
+          heights = res.heights
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+
     const update = () => {
       // placeholder for physics updates
     };
@@ -86,12 +131,33 @@ export const App = () => {
     return () => {
       loop.stop()
       canvas.removeEventListener('click', handleClick)
+      window.removeEventListener('keydown', onKey)
     }
   }, []);
+
+  const angleRef = useRef<number>(ANGLE_DEG_DEFAULT)
+  const powerRef = useRef<number>(LAUNCH_SPEED_DEFAULT)
+  const windAxRef = useRef<number>(DEFAULT_WIND_AX)
+
+  const handleAngleChange = (deg: number) => {
+    angleRef.current = deg
+  }
+  const handlePowerChange = (p: number) => {
+    powerRef.current = p
+  }
+
+  // second effect was merged into the main effect below to access local terrain state
 
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <canvas ref={canvasRef} />
+      <Hud
+        angleDeg={angleRef.current}
+        power={powerRef.current}
+        windAx={windAxRef.current}
+        onAngleChange={handleAngleChange}
+        onPowerChange={handlePowerChange}
+      />
     </div>
   )
 }
