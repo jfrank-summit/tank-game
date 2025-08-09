@@ -4,6 +4,12 @@ import './index.css'
 import { generateHeightmap } from './game/terrain/generate-heightmap'
 import type { TerrainConfig } from './game/terrain/types'
 import { renderTerrainFromHeightmap, renderTerrainOutline } from './game/render/terrain'
+import {
+  createMaskFromHeightmap,
+  applyCrater,
+  recomputeHeightmapFromMask,
+} from './game/terrain/mask'
+import type { TerrainDimensions } from './game/terrain/mask'
 
 export const App = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -12,7 +18,10 @@ export const App = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dims = { width: Math.floor(window.innerWidth), height: Math.floor(window.innerHeight) }
+    const dims: TerrainDimensions = {
+      width: Math.floor(window.innerWidth),
+      height: Math.floor(window.innerHeight),
+    }
     const config: TerrainConfig = {
       width: dims.width,
       minHeight: Math.floor(dims.height * 0.35),
@@ -22,6 +31,17 @@ export const App = () => {
       seed: 12345,
     }
     let heights = generateHeightmap(config)
+    let mask = createMaskFromHeightmap(heights, dims)
+
+    const handleClick = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      const x = Math.floor(e.clientX - rect.left)
+      const y = Math.floor(e.clientY - rect.top)
+      const radius = 30
+      mask = applyCrater(mask, dims, x, y, radius)
+      heights = recomputeHeightmapFromMask(mask, dims)
+    }
+    canvas.addEventListener('click', handleClick)
 
     const update = () => {
       // placeholder for physics updates
@@ -50,7 +70,10 @@ export const App = () => {
     };
 
     const loop = startGameLoop(canvas, update, render);
-    return () => loop.stop();
+    return () => {
+      loop.stop()
+      canvas.removeEventListener('click', handleClick)
+    }
   }, []);
 
   return (
