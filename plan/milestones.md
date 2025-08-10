@@ -27,6 +27,8 @@
 - Angle/power controls, wind indicator
 - Basic SFX, simple camera follow
 
+- Commit breakdown: see `plan/commits/M3_turn-loop.md`
+
 ### M4 — Weapons (Day 4-5)
 
 - Data-driven weapon definitions
