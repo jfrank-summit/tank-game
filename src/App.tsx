@@ -12,25 +12,10 @@ import {
 import type { TerrainDimensions } from './game/terrain/mask';
 import { placeTwoTanks } from './game/spawn/place-tanks';
 import { renderTank } from './game/render/tank';
-import {
-  ANGLE_DEG_DEFAULT,
-  LAUNCH_SPEED_DEFAULT,
-  GRAVITY_PX_S2,
-  DEFAULT_WIND_AX,
-  EXPLOSION_RADIUS,
-} from './game/config';
-import { createProjectile, stepProjectile } from './game/physics/projectile';
-import { segmentFirstImpact } from './game/physics/collision';
-import { applyExplosion } from './game/effects/explosion';
+import { ANGLE_DEG_DEFAULT, LAUNCH_SPEED_DEFAULT, DEFAULT_WIND_AX } from './game/config';
 import { Hud } from './ui/hud';
 import { useReducer } from 'react';
-import {
-  ANGLE_DEG_DEFAULT,
-  LAUNCH_SPEED_DEFAULT,
-  GRAVITY_PX_S2,
-  DEFAULT_WIND_AX,
-  EXPLOSION_RADIUS,
-} from './game/config';
+// imports above provide config
 import {
   createInitialGameState,
   reducer as gameReducer,
