@@ -148,6 +148,9 @@ export const App = () => {
   const handlePowerChange = (p: number) => {
     powerRef.current = p;
   };
+  const handleWindChange = (ax: number) => {
+    windAxRef.current = ax;
+  };
 
   // second effect was merged into the main effect below to access local terrain state
 
@@ -160,6 +163,7 @@ export const App = () => {
         windAx={windAxRef.current}
         onAngleChange={handleAngleChange}
         onPowerChange={handlePowerChange}
+        onWindChange={handleWindChange}
       />
     </div>
   );

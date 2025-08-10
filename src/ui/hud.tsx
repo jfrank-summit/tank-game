@@ -6,9 +6,10 @@ interface HudProps {
   windAx: number;
   onAngleChange: (deg: number) => void;
   onPowerChange: (p: number) => void;
+  onWindChange: (ax: number) => void;
 }
 
-export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange }: HudProps) => {
+export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange, onWindChange }: HudProps) => {
   const handleAngle = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
     (e) => onAngleChange(Number(e.target.value)),
     [onAngleChange],
@@ -16,6 +17,10 @@ export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange }: H
   const handlePower = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
     (e) => onPowerChange(Number(e.target.value)),
     [onPowerChange],
+  );
+  const handleWind = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
+    (e) => onWindChange(Number(e.target.value)),
+    [onWindChange],
   );
   return (
     <div
@@ -51,6 +56,18 @@ export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange }: H
           max={600}
           value={power}
           onChange={handlePower}
+          style={{ width: 180, marginLeft: 8 }}
+        />
+      </label>
+      <label style={{ display: 'block', marginTop: 6 }}>
+        WindAx:
+        <input
+          type="range"
+          min={-200}
+          max={200}
+          step={5}
+          value={windAx}
+          onChange={handleWind}
           style={{ width: 180, marginLeft: 8 }}
         />
       </label>
