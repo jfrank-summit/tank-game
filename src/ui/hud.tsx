@@ -1,22 +1,22 @@
-import { useCallback } from 'react'
+import { useCallback } from 'react';
 
 interface HudProps {
-  angleDeg: number
-  power: number
-  windAx: number
-  onAngleChange: (deg: number) => void
-  onPowerChange: (p: number) => void
+  angleDeg: number;
+  power: number;
+  windAx: number;
+  onAngleChange: (deg: number) => void;
+  onPowerChange: (p: number) => void;
 }
 
 export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange }: HudProps) => {
   const handleAngle = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
     (e) => onAngleChange(Number(e.target.value)),
     [onAngleChange],
-  )
+  );
   const handlePower = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
     (e) => onPowerChange(Number(e.target.value)),
     [onPowerChange],
-  )
+  );
   return (
     <div
       style={{
@@ -55,6 +55,5 @@ export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange }: H
         />
       </label>
     </div>
-  )
-}
-
+  );
+};

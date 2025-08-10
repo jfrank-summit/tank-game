@@ -23,7 +23,7 @@ import { createProjectile, stepProjectile } from './game/physics/projectile';
 import { segmentFirstImpact } from './game/physics/collision';
 import { applyExplosion } from './game/effects/explosion';
 import { Hud } from './ui/hud';
-import { addShake, createShake, updateAndGetOffset } from './game/render/shake'
+import { addShake, createShake, updateAndGetOffset } from './game/render/shake';
 
 export const App = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -46,7 +46,7 @@ export const App = () => {
     };
     let heights = generateHeightmap(config);
     let mask = createMaskFromHeightmap(heights, dims);
-    const shake = createShake()
+    const shake = createShake();
     const [tankA, tankB] = placeTwoTanks({
       dims,
       mask,
@@ -89,7 +89,7 @@ export const App = () => {
           const res = applyExplosion(mask, dims, impact.x, impact.y, EXPLOSION_RADIUS);
           mask = res.mask;
           heights = res.heights;
-          addShake(shake, 3, 0.25)
+          addShake(shake, 3, 0.25);
         }
       }
     };
@@ -110,9 +110,9 @@ export const App = () => {
       ctx.fillStyle = grd;
       ctx.fillRect(0, 0, width, height);
 
-      const offset = updateAndGetOffset(shake, 1 / 60)
-      ctx.save()
-      ctx.translate(offset.x, offset.y)
+      const offset = updateAndGetOffset(shake, 1 / 60);
+      ctx.save();
+      ctx.translate(offset.x, offset.y);
 
       // centered text
       ctx.fillStyle = '#cbd5e1';
@@ -127,7 +127,7 @@ export const App = () => {
       // tanks
       renderTank(ctx, tankA, 10, '#38bdf8');
       renderTank(ctx, tankB, 10, '#f472b6');
-      ctx.restore()
+      ctx.restore();
     };
 
     const loop = startGameLoop(canvas, update, render);

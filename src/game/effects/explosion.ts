@@ -1,10 +1,10 @@
-import type { TerrainDimensions, TerrainMask } from '../terrain/mask'
-import { applyCrater, recomputeHeightmapFromMask } from '../terrain/mask'
-import type { Heightmap } from '../terrain/types'
+import type { TerrainDimensions, TerrainMask } from '../terrain/mask';
+import { applyCrater, recomputeHeightmapFromMask } from '../terrain/mask';
+import type { Heightmap } from '../terrain/types';
 
 export interface ExplosionResult {
-  mask: TerrainMask
-  heights: Heightmap
+  mask: TerrainMask;
+  heights: Heightmap;
 }
 
 export const applyExplosion = (
@@ -14,8 +14,7 @@ export const applyExplosion = (
   centerY: number,
   radius: number,
 ): ExplosionResult => {
-  const nextMask = applyCrater(mask, dims, centerX, centerY, radius)
-  const heights = recomputeHeightmapFromMask(nextMask, dims)
-  return { mask: nextMask, heights }
-}
-
+  const nextMask = applyCrater(mask, dims, centerX, centerY, radius);
+  const heights = recomputeHeightmapFromMask(nextMask, dims);
+  return { mask: nextMask, heights };
+};
