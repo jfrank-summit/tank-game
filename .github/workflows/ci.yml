@@ -19,10 +19,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'yarn'
+          # Do NOT use built-in Yarn caching; it may invoke global Yarn 1.x before Corepack is prepared
 
       - name: Enable Corepack (Yarn)
-        run: corepack enable
+        run: |
+          corepack enable
+          # Remove any pre-existing Yarn binary that might shadow Corepack
+          sudo rm -f /usr/local/bin/yarn || true
 
       - name: Activate Yarn 4.9.2 via Corepack
         run: corepack prepare yarn@4.9.2 --activate
@@ -31,6 +34,11 @@ jobs:
         run: |
           yarn --version || true
           corepack yarn --version
+
+      - name: Show Node and Corepack versions
+        run: |
+          node -v
+          corepack --version
 
       - name: Cache Yarn Berry artifacts
         uses: actions/cache@v4
@@ -43,15 +51,25 @@ jobs:
 
       - name: Install dependencies
         run: corepack yarn install --immutable
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'true'
 
       - name: Lint
         run: corepack yarn lint
+        env:
+          YARN_IGNORE_NODE: '1'
 
       - name: Typecheck
         run: corepack yarn typecheck
+        env:
+          YARN_IGNORE_NODE: '1'
 
       - name: Test
         run: corepack yarn test
+        env:
+          YARN_IGNORE_NODE: '1'
 
       - name: Build
         run: corepack yarn build
+        env:
+          YARN_IGNORE_NODE: '1'
