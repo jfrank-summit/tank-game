@@ -1,7 +1,7 @@
 {
   "name": "tank-game",
   "private": true,
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "yarn@4.9.2",
   "type": "module",
   "scripts": {
     "dev": "vite",

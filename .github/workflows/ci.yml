@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -24,8 +24,8 @@ jobs:
       - name: Enable Corepack (Yarn)
         run: corepack enable
 
-      - name: Activate Yarn 4.6.0 via Corepack
-        run: corepack prepare yarn@4.6.0 --activate
+      - name: Activate Yarn 4.9.2 via Corepack
+        run: corepack prepare yarn@4.9.2 --activate
 
       - name: Cache Yarn Berry artifacts
         uses: actions/cache@v4
@@ -50,5 +50,3 @@ jobs:
 
       - name: Build
         run: yarn build
-
-
