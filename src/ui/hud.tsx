@@ -1,15 +1,16 @@
 import { useCallback } from 'react';
 
 interface HudProps {
-  angleDeg: number;
-  power: number;
-  windAx: number;
-  onAngleChange: (deg: number) => void;
-  onPowerChange: (p: number) => void;
-  onWindChange: (ax: number) => void;
+  angleDeg: number
+  power: number
+  windAx: number
+  onAngleChange: (deg: number) => void
+  onPowerChange: (p: number) => void
+  onWindChange: (ax: number) => void
+  activeTankId?: string
 }
 
-export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange, onWindChange }: HudProps) => {
+export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange, onWindChange, activeTankId }: HudProps) => {
   const handleAngle = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
     (e) => onAngleChange(Number(e.target.value)),
     [onAngleChange],
@@ -37,6 +38,9 @@ export const Hud = ({ angleDeg, power, windAx, onAngleChange, onPowerChange, onW
       }}
     >
       <div style={{ marginBottom: 6 }}>Wind: {windAx.toFixed(1)} px/s²</div>
+      {activeTankId ? (
+        <div style={{ marginBottom: 6 }}>Active: {activeTankId}</div>
+      ) : null}
       <label style={{ display: 'block', marginBottom: 6 }}>
         Angle: {angleDeg}°
         <input

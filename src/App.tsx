@@ -23,10 +23,36 @@ import { createProjectile, stepProjectile } from './game/physics/projectile';
 import { segmentFirstImpact } from './game/physics/collision';
 import { applyExplosion } from './game/effects/explosion';
 import { Hud } from './ui/hud';
+import { useReducer } from 'react';
+import {
+  ANGLE_DEG_DEFAULT,
+  LAUNCH_SPEED_DEFAULT,
+  GRAVITY_PX_S2,
+  DEFAULT_WIND_AX,
+  EXPLOSION_RADIUS,
+} from './game/config';
+import {
+  createInitialGameState,
+  reducer as gameReducer,
+  selectActiveTank,
+} from './game/state/game';
+import { simulateShot } from './game/state/shot';
 import { addShake, createShake, updateAndGetOffset } from './game/render/shake';
 
 export const App = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [game, dispatch] = useReducer(
+    gameReducer,
+    createInitialGameState({
+      tanks: [
+        { id: 'A', position: { x: 100, y: 100 } },
+        { id: 'B', position: { x: 300, y: 100 } },
+      ],
+      initialAngleDeg: ANGLE_DEG_DEFAULT,
+      initialPower: LAUNCH_SPEED_DEFAULT,
+      windAx: DEFAULT_WIND_AX,
+    }),
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -54,6 +80,8 @@ export const App = () => {
       minSeparation: Math.floor(dims.width * 0.35),
       maxSlopeDegrees: 30,
     });
+    // Initialize positions into game state clones for rendering/controls
+    dispatch({ type: 'setWind', windAx: DEFAULT_WIND_AX });
 
     const handleClick = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -67,28 +95,19 @@ export const App = () => {
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === ' ') {
-        const startX = tankA.x;
-        const startY = tankA.y;
-        const angleRad = (angleRef.current * Math.PI) / 180;
-        let prev = createProjectile(startX, startY, powerRef.current, angleRad);
-        let current = prev;
-        const dt = 1 / 120;
-        let impact: ReturnType<typeof segmentFirstImpact> | null = null;
-        for (let i = 0; i < 2000; i += 1) {
-          current = stepProjectile(current, dt, {
-            gravity: GRAVITY_PX_S2,
+        const active = selectActiveTank(game);
+        const fireFrom = active.id === 'A' ? tankA : tankB;
+        const fireSim = simulateShot(
+          {
+            ...game,
             windAx: windAxRef.current,
-          });
-          impact = segmentFirstImpact(mask, dims, prev.x, prev.y, current.x, current.y, 0.75);
-          if (impact || current.x < 0 || current.x >= dims.width || current.y >= dims.height) {
-            break;
-          }
-          prev = current;
-        }
-        if (impact) {
-          const res = applyExplosion(mask, dims, impact.x, impact.y, EXPLOSION_RADIUS);
-          mask = res.mask;
-          heights = res.heights;
+          },
+          { ...active, position: fireFrom },
+          { mask, dims },
+        );
+        if (fireSim.impact) {
+          mask = fireSim.mask;
+          heights = fireSim.heights.length ? fireSim.heights : heights;
           addShake(shake, 3, 0.25);
         }
       }
@@ -144,12 +163,15 @@ export const App = () => {
 
   const handleAngleChange = (deg: number) => {
     angleRef.current = deg;
+    dispatch({ type: 'setAngle', degrees: deg });
   };
   const handlePowerChange = (p: number) => {
     powerRef.current = p;
+    dispatch({ type: 'setPower', power: p });
   };
   const handleWindChange = (ax: number) => {
     windAxRef.current = ax;
+    dispatch({ type: 'setWind', windAx: ax });
   };
 
   // second effect was merged into the main effect below to access local terrain state
@@ -164,6 +186,7 @@ export const App = () => {
         onAngleChange={handleAngleChange}
         onPowerChange={handlePowerChange}
         onWindChange={handleWindChange}
+        activeTankId={selectActiveTank(game).id}
       />
     </div>
   );
